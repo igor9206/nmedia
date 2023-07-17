@@ -11,11 +11,11 @@
         android:id="@+id/avatar"
         android:layout_width="@dimen/avatar_size"
         android:layout_height="@dimen/avatar_size"
+        android:layout_marginBottom="@dimen/common_padding"
         android:contentDescription="@string/description_post_author_avatar"
         app:layout_constraintBottom_toBottomOf="@id/barrierTop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginBottom="@dimen/common_padding"
         tools:srcCompat="@sample/post_avatar" />
 
     <TextView
@@ -131,19 +131,18 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/description_view_post"
         android:src="@drawable/ic_baseline_remove_red_eye_24"
-        app:layout_constraintEnd_toStartOf="@id/countView"
-        app:layout_constraintTop_toTopOf="@id/likes"
         app:layout_constraintBottom_toBottomOf="@id/likes"
-         />
+        app:layout_constraintEnd_toStartOf="@id/countView"
+        app:layout_constraintTop_toTopOf="@id/likes" />
 
     <TextView
         android:id="@+id/countView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/_4dp"
+        app:layout_constraintBottom_toBottomOf="@id/view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/view"
-        app:layout_constraintBottom_toBottomOf="@id/view"
         tools:text="@sample/posts.json/data/view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
