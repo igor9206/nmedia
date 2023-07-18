@@ -14,9 +14,10 @@
         android:layout_marginBottom="@dimen/common_padding"
         android:contentDescription="@string/description_post_author_avatar"
         app:layout_constraintBottom_toBottomOf="@id/barrierTop"
+        android:src="@drawable/ic_netology_48dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@sample/post_avatar" />
+        tools:srcCompat="@sample/posts.json/data/authorAvatar" />
 
     <TextView
         android:id="@+id/author"
