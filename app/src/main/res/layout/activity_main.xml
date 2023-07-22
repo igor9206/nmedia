@@ -80,7 +80,7 @@
         app:constraint_referenced_ids="content" />
 
     <ImageButton
-        android:id="@+id/likes"
+        android:id="@+id/like"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/common_padding"
@@ -96,9 +96,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/_4dp"
-        app:layout_constraintBottom_toBottomOf="@id/likes"
-        app:layout_constraintStart_toEndOf="@id/likes"
-        app:layout_constraintTop_toTopOf="@id/likes"
+        app:layout_constraintBottom_toBottomOf="@id/like"
+        app:layout_constraintStart_toEndOf="@id/like"
+        app:layout_constraintTop_toTopOf="@id/like"
         tools:text="@sample/posts.json/data/likes" />
 
     <ImageButton
@@ -109,10 +109,10 @@
         android:background="@android:color/transparent"
         android:contentDescription="@string/description_share_post"
         android:src="@drawable/ic_baseline_share_24"
-        app:layout_constraintBottom_toBottomOf="@id/likes"
+        app:layout_constraintBottom_toBottomOf="@id/like"
         app:layout_constraintEnd_toStartOf="@id/countShare"
         app:layout_constraintStart_toEndOf="@id/countLikes"
-        app:layout_constraintTop_toTopOf="@id/likes" />
+        app:layout_constraintTop_toTopOf="@id/like" />
 
     <TextView
         android:id="@+id/countShare"
@@ -131,9 +131,9 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/description_view_post"
         android:src="@drawable/ic_baseline_remove_red_eye_24"
-        app:layout_constraintBottom_toBottomOf="@id/likes"
+        app:layout_constraintBottom_toBottomOf="@id/like"
         app:layout_constraintEnd_toStartOf="@id/countView"
-        app:layout_constraintTop_toTopOf="@id/likes" />
+        app:layout_constraintTop_toTopOf="@id/like" />
 
     <TextView
         android:id="@+id/countView"
