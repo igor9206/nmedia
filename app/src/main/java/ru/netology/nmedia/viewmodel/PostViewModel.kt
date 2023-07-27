@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryInMemoryImpl
 
-class PostViewModel: ViewModel() {
+class PostViewModel : ViewModel() {
 
     private val repository: PostRepository = PostRepositoryInMemoryImpl()
 
-    val data = repository.get()
+    val data = repository.getAll()
 
-    fun like() = repository.like()
+    fun likeById(id: Long) = repository.likeById(id)
 
-    fun share() = repository.share()
+    fun share(id: Long) = repository.share(id)
 }
