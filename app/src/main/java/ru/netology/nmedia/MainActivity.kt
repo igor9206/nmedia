@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity() {
             binding.content.clearFocus()
             binding.groupEditMsg.visibility = View.GONE
             AndroidUtils.hideKeyboard(it)
+            viewModel.resetEdited()
         }
     }
 }
