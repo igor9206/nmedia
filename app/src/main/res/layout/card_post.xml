@@ -42,13 +42,13 @@
         app:layout_constraintTop_toBottomOf="@id/author"
         tools:text="@sample/posts.json/data/published" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/menu"
+        style="@style/Widget.AppTheme.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
         android:contentDescription="@string/description_post_menu"
-        android:src="@drawable/ic_more_vert_24"
+        app:icon="@drawable/ic_more_vert_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -83,37 +83,26 @@
         style="@style/Widget.AppTheme.LikeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minHeight="0dp"
         android:layout_marginTop="@dimen/common_padding"
         android:checkable="true"
         android:contentDescription="@string/description_like_post"
+        android:minHeight="0dp"
         app:icon="@drawable/ic_like_selector"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barrierContent" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/share"
+        style="@style/Widget.AppTheme.LikeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/common_padding"
-        android:background="@android:color/transparent"
         android:contentDescription="@string/description_share_post"
-        android:src="@drawable/ic_baseline_share_24"
+        android:minHeight="0dp"
+        app:icon="@drawable/ic_baseline_share_24"
         app:layout_constraintBottom_toBottomOf="@id/like"
-        app:layout_constraintEnd_toStartOf="@id/countShare"
         app:layout_constraintStart_toEndOf="@id/like"
         app:layout_constraintTop_toTopOf="@id/like" />
-
-    <TextView
-        android:id="@+id/countShare"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/_4dp"
-        app:layout_constraintBottom_toBottomOf="@id/share"
-        app:layout_constraintStart_toEndOf="@id/share"
-        app:layout_constraintTop_toTopOf="@id/share"
-        tools:text="@sample/posts.json/data/share" />
-
 
     <ImageView
         android:id="@+id/view"
