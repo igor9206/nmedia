@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Widget.AppTheme.Button" parent="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon">
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="iconPadding">0dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="iconTint">?attr/colorControlNormal</item>
+        <item name="strokeColor">@android:color/transparent</item>
+    </style>
+</resources>
