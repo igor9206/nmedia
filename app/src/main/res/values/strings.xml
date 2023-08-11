@@ -14,4 +14,9 @@
     <string name="cancel_edit">cancel edit</string>
     <string name="edit_message">Edit message</string>
     <string name="icon_edit">icon edit</string>
+    <string name="chooser_share_post">Share post</string>
+    <string name="not_supported_in_any_application">the action is not supported in any application</string>
+    <string name="description_post_save">description_post_save</string>
+    <string name="fab">fab</string>
+    <string name="play_button">play button</string>
 </resources>

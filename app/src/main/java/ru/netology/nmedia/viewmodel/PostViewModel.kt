@@ -13,14 +13,15 @@ private val empty = Post(
     likedByMe = false,
     published = "",
     likes = 0,
-    share = 0
+    share = 0,
+    video = ""
 )
 
 class PostViewModel : ViewModel() {
 
     private val repository: PostRepository = PostRepositoryInMemoryImpl()
     val data = repository.getAll()
-    val edited = MutableLiveData(empty)
+    private val edited = MutableLiveData(empty)
 
     fun likeById(id: Long) = repository.likeById(id)
     fun share(id: Long) = repository.share(id)
@@ -40,7 +41,7 @@ class PostViewModel : ViewModel() {
         edited.value = post
     }
 
-    fun resetEdited(){
+    fun resetEdited() {
         edited.value = empty
     }
 }

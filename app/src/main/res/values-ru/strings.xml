@@ -15,4 +15,9 @@
     <string name="cancel_edit">отмена редактирования</string>
     <string name="edit_message">Редактировние</string>
     <string name="icon_edit">иконка редактора</string>
+    <string name="chooser_share_post">отправить пост</string>
+    <string name="not_supported_in_any_application">действие не поддерживается ни в одном приложении</string>
+    <string name="description_post_save">сохранить пост</string>
+    <string name="fab">фаб</string>
+    <string name="play_button">кнопка плэй</string>
 </resources>
