@@ -48,9 +48,7 @@ class PostViewHolder(
             share.text = post.numericFormat(post.share)
             view.text = post.numericFormat(post.view)
 
-            if (post.video.isNotEmpty()) {
-                playButton.visibility = View.VISIBLE
-            }
+            playButton.visibility = if (post.video.isNotEmpty()) View.VISIBLE else View.GONE
             playButton.setOnClickListener {
                 onInteractionListener.openVideo(post)
             }
