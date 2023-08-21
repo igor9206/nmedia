@@ -19,6 +19,4 @@
     <string name="description_post_save">description_post_save</string>
     <string name="fab">fab</string>
     <string name="play_button">play button</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
