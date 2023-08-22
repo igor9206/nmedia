@@ -33,7 +33,6 @@ class EditPostFragment : Fragment() {
         }
 
         binding.edit.focusAndShowKeyboard()
-
         binding.ok.setOnClickListener {
             if (!binding.edit.text.isNullOrBlank()) {
                 val content = binding.edit.text.toString()
