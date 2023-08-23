@@ -17,6 +17,7 @@ interface OnInteractionListener {
     fun edit(post: Post)
     fun share(post: Post)
     fun openVideo(post: Post)
+    fun openCardPost(post: Post)
 }
 
 
@@ -51,6 +52,10 @@ class PostViewHolder(
             playButton.visibility = if (post.video.isNotEmpty()) View.VISIBLE else View.GONE
             playButton.setOnClickListener {
                 onInteractionListener.openVideo(post)
+            }
+
+            binding.cardPost.setOnClickListener {
+                onInteractionListener.openCardPost(post)
             }
 
             like.setOnClickListener {
