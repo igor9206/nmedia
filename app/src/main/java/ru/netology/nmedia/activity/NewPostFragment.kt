@@ -1,9 +1,12 @@
 package ru.netology.nmedia.activity
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
+import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -26,6 +29,12 @@ class NewPostFragment : Fragment() {
     ): View {
         val binding = FragmentNewPostBinding.inflate(inflater, container, false)
 
+        val prefDraft = activity?.getPreferences(Context.MODE_PRIVATE)
+        var draft = prefDraft?.getString("draft", null)
+        if (draft != null){
+            binding.edit.setText(draft)
+        }
+
         val text = arguments?.text
         if (text != null) {
             binding.edit.setText(text)
@@ -36,6 +45,15 @@ class NewPostFragment : Fragment() {
             if (!binding.edit.text.isNullOrBlank()) {
                 val content = binding.edit.text.toString()
                 viewModel.changeContentAndSave(content)
+            }
+            prefDraft?.edit { clear() }
+            findNavController().navigateUp()
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            draft = binding.edit.text.toString()
+            prefDraft?.edit {
+                putString("draft", draft)
             }
             findNavController().navigateUp()
         }
