@@ -63,6 +63,7 @@ class PostFragment : Fragment() {
                     val shareIntent =
                         Intent.createChooser(intent, getString(R.string.chooser_share_post))
                     startActivity(shareIntent)
+                    viewModel.share(post.id)
                 }
 
                 override fun openVideo(post: Post) {
