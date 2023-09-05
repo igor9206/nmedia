@@ -19,4 +19,9 @@
     <string name="description_post_save">description_post_save</string>
     <string name="fab">fab</string>
     <string name="play_button">play button</string>
+    <string name="google_play_unavailable">google play unavailable</string>
+    <string name="channel_remote_name">Server notification</string>
+    <string name="channel_remote_description">Notifications from remote server</string>
+    <string name="notification_user_liked">User %1$s liked %2$s\'s post</string>
+    <string name="notification_new_post">%1$s posted a new post:\n %2$s</string>
 </resources>
