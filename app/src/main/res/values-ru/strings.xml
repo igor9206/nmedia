@@ -20,4 +20,9 @@
     <string name="description_post_save">сохранить пост</string>
     <string name="fab">фаб</string>
     <string name="play_button">кнопка плэй</string>
+    <string name="google_play_unavailable">гугл сервисы недоступны</string>
+    <string name="channel_remote_name">уведомления сервера</string>
+    <string name="channel_remote_description">уведомления от удаленного сервера</string>
+    <string name="notification_user_liked">Пользователь %1$s лайкнул %2$s пост</string>
+    <string name="notification_new_post">%1$s опубликовал новый пост:\n %2$s</string>
 </resources>
