@@ -3,13 +3,13 @@ package ru.netology.nmedia.dto
 data class Post(
     val id: Long,
     val author: String,
-    val published: String,
     val content: String,
+    val published: String,
     var likedByMe: Boolean,
-    var likes: Int,
-    var share: Int,
-    var view: Int = 0,
-    val video: String = ""
+    var likes: Int
+//    var share: Int,
+//    var view: Int = 0,
+//    val video: String = ""
 ) {
     fun numericFormat(number: Int): String {
         return when {
