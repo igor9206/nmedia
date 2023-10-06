@@ -25,4 +25,7 @@
     <string name="channel_remote_description">уведомления от удаленного сервера</string>
     <string name="notification_user_liked">Пользователь %1$s лайкнул %2$s пост</string>
     <string name="notification_new_post">%1$s опубликовал новый пост:\n %2$s</string>
+    <string name="no_posts">нет постов</string>
+    <string name="internet_error">ошибка интернета</string>
+    <string name="retry">повторить</string>
 </resources>
