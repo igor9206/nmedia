@@ -49,10 +49,21 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun likeById(id: Long) {
+    fun likeById(id: Long, likedByMe: Boolean) {
         thread {
-            repository.likeById(id)
-            load()
+            val post = repository.likeById(id, likedByMe)
+            val posts = data.value?.posts
+            if (posts != null) {
+                _data.postValue(
+                    FeedModelState(
+                        posts = posts.map {
+                            if (it.id == post.id) {
+                                post
+                            } else it
+                        }
+                    )
+                )
+            }
         }
     }
 
