@@ -24,4 +24,7 @@
     <string name="channel_remote_description">Notifications from remote server</string>
     <string name="notification_user_liked">User %1$s liked %2$s\'s post</string>
     <string name="notification_new_post">%1$s posted a new post:\n %2$s</string>
+    <string name="no_posts">no posts</string>
+    <string name="internet_error">Internet error</string>
+    <string name="retry">retry</string>
 </resources>

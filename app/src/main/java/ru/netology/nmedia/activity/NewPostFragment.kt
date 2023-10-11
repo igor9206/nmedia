@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
+import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.util.AndroidUtils.focusAndShowKeyboard
 import ru.netology.nmedia.util.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel
@@ -31,7 +32,7 @@ class NewPostFragment : Fragment() {
 
         val prefDraft = activity?.getPreferences(Context.MODE_PRIVATE)
         var draft = prefDraft?.getString("draft", null)
-        if (draft != null){
+        if (draft != null) {
             binding.edit.setText(draft)
         }
 
@@ -45,8 +46,12 @@ class NewPostFragment : Fragment() {
             if (!binding.edit.text.isNullOrBlank()) {
                 val content = binding.edit.text.toString()
                 viewModel.changeContentAndSave(content)
+                AndroidUtils.hideKeyboard(requireView())
             }
             prefDraft?.edit { clear() }
+        }
+
+        viewModel.postCreated.observe(viewLifecycleOwner) {
             findNavController().navigateUp()
         }
 
