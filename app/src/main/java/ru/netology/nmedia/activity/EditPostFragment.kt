@@ -38,6 +38,9 @@ class EditPostFragment : Fragment() {
                 val content = binding.edit.text.toString()
                 viewModel.changeContentAndSave(content)
             }
+        }
+
+        viewModel.postCreated.observe(viewLifecycleOwner) {
             findNavController().navigateUp()
         }
 
