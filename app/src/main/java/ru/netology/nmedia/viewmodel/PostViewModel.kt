@@ -75,8 +75,8 @@ class PostViewModel(private val application: Application) : AndroidViewModel(app
     fun share(id: Long) = repository.share(id)
     fun removeById(id: Long) {
         val posts = data.value?.posts
-        repository.removeByIdAsync(object : PostRepository.GetAllCallBack<Any> {
-            override fun onSuccess(item: Any) {
+        repository.removeByIdAsync(object : PostRepository.GetAllCallBack<Unit> {
+            override fun onSuccess(item: Unit) {
                 if (posts != null) {
                     _data.postValue(
                         FeedModelState(
