@@ -9,7 +9,6 @@ import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.util.SingleLiveEvent
-import kotlin.concurrent.thread
 
 private val empty = Post(
     id = 0,
@@ -22,7 +21,7 @@ private val empty = Post(
 //    video = ""
 )
 
-class PostViewModel(application: Application) : AndroidViewModel(application) {
+class PostViewModel(private val application: Application) : AndroidViewModel(application) {
 
     private val repository: PostRepository = PostRepositoryImpl()
     private val _data = MutableLiveData(FeedModelState())
@@ -36,50 +35,78 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun load() {
-        thread {
-            _data.postValue(FeedModelState(loading = true))
+        _data.postValue(FeedModelState(loading = true))
 
-            try {
-                val posts = repository.getAll()
-                (FeedModelState(posts = posts, empty = posts.isEmpty()))
-            } catch (e: Exception) {
-                (FeedModelState(error = true))
+        repository.getAllAsync(object : PostRepository.GetAllCallBack<List<Post>> {
+            override fun onSuccess(item: List<Post>) {
+                _data.postValue(FeedModelState(posts = item, empty = item.isEmpty()))
             }
-                .let(_data::postValue)
-        }
+
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModelState(error = true))
+            }
+        })
     }
 
+
     fun likeById(id: Long, likedByMe: Boolean) {
-        thread {
-            val post = repository.likeById(id, likedByMe)
-            val posts = data.value?.posts
-            if (posts != null) {
-                _data.postValue(
-                    FeedModelState(
-                        posts = posts.map {
-                            if (it.id == post.id) {
-                                post
-                            } else it
-                        }
+        val posts = data.value?.posts
+        repository.likeByIdAsync(object : PostRepository.GetAllCallBack<Post> {
+            override fun onSuccess(item: Post) {
+                if (posts != null) {
+                    _data.postValue(
+                        FeedModelState(
+                            posts = posts.map {
+                                if (it.id == item.id) {
+                                    item
+                                } else it
+                            }
+                        )
                     )
-                )
+                }
             }
-        }
+
+            override fun onError(e: Exception) {
+                println(e)
+            }
+        }, likedByMe, id)
     }
 
     fun share(id: Long) = repository.share(id)
-    fun removeById(id: Long) = repository.removeById(id)
+    fun removeById(id: Long) {
+        val posts = data.value?.posts
+        repository.removeByIdAsync(object : PostRepository.GetAllCallBack<Any> {
+            override fun onSuccess(item: Any) {
+                if (posts != null) {
+                    _data.postValue(
+                        FeedModelState(
+                            posts = posts.filter { it.id != id }
+                        )
+                    )
+                }
+            }
+
+            override fun onError(e: Exception) {
+                println(e)
+            }
+        }, id)
+    }
 
     fun changeContentAndSave(content: String) {
-        thread {
-            edited.value?.let {
-                val text = content.trim()
-                if (it.content != content) {
-                    repository.save(it.copy(content = text))
-                    load()
-                }
-                _postCreated.postValue(Unit)
-                edited.postValue(empty)
+        edited.value?.let {
+            val text = content.trim()
+            if (it.content != content) {
+                repository.saveAsync(object : PostRepository.GetAllCallBack<Post> {
+                    override fun onSuccess(item: Post) {
+                        load()
+                        _postCreated.postValue(Unit)
+                        edited.postValue(empty)
+                    }
+
+                    override fun onError(e: Exception) {
+                        println(e)
+                    }
+                }, it.copy(content = text))
             }
         }
     }
