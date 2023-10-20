@@ -15,7 +15,7 @@ class PostRepositoryImpl() : PostRepository {
                 if (response.isSuccessful) {
                     callback.onSuccess(response.body() ?: throw RuntimeException("empty bode"))
                 } else {
-                    callback.onError(RuntimeException("error code: ${response.code()}}"))
+                    callback.onError(RuntimeException(response.code().toString()))
                 }
             }
 
@@ -41,7 +41,7 @@ class PostRepositoryImpl() : PostRepository {
                 if (response.isSuccessful) {
                     callback.onSuccess(response.body() ?: throw RuntimeException("empty bode"))
                 } else {
-                    callback.onError(RuntimeException("error code: ${response.code()}"))
+                    callback.onError(RuntimeException(response.code().toString()))
                 }
             }
 
@@ -61,7 +61,7 @@ class PostRepositoryImpl() : PostRepository {
                 if (response.isSuccessful) {
                     callback.onSuccess(response.body() ?: throw RuntimeException("empty bode"))
                 } else {
-                    callback.onError(RuntimeException("error code: ${response.code()}"))
+                    callback.onError(RuntimeException(response.code().toString()))
                 }
             }
 
@@ -79,7 +79,7 @@ class PostRepositoryImpl() : PostRepository {
                     if (response.isSuccessful) {
                         callback.onSuccess(response.body() ?: throw RuntimeException("empty bode"))
                     } else {
-                        callback.onError(RuntimeException("error code: ${response.code()}"))
+                        callback.onError(RuntimeException(response.code().toString()))
                     }
                 }
 

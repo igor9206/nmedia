@@ -118,7 +118,12 @@ class PostViewModel(private val application: Application) : AndroidViewModel(app
     }
 
     private fun errorMsg(error: String) {
-        Toast.makeText(application, error, Toast.LENGTH_SHORT).show()
+        val msg = when (error.takeLast(3).first()) {
+            '4' -> "Client error: ${error.takeLast(3)}"
+            '5' -> "Server error: ${error.takeLast(3)}"
+            else -> "Error. Check internet connection"
+        }
+        Toast.makeText(application, msg, Toast.LENGTH_SHORT).show()
     }
 
 }
