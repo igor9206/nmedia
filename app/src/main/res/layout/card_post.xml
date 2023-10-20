@@ -2,8 +2,8 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.MaterialComponents.CardView"
     android:id="@+id/cardPost"
+    style="@style/Widget.MaterialComponents.CardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/_4dp"
@@ -89,15 +89,14 @@
                 app:layout_constraintTop_toTopOf="@id/barrierTop"
                 tools:text="@sample/posts.json/data/content" />
 
-            <ImageButton
-                android:id="@+id/playButton"
+            <ru.netology.nmedia.extension.ResizableImageView
+                android:id="@+id/imageContent"
                 android:layout_width="wrap_content"
-                android:layout_height="220dp"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/_4dp"
-                android:background="@drawable/preview"
-                android:contentDescription="@string/play_button"
-                android:src="@drawable/ic_play_media_48"
+                android:contentDescription="@string/image_content"
                 android:visibility="gone"
+                tools:srcCompat="@drawable/ic_loading_100dp"
                 tools:visibility="visible" />
 
 

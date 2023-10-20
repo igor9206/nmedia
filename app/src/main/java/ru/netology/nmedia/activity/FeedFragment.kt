@@ -57,21 +57,6 @@ class FeedFragment : Fragment() {
                 viewModel.share(post.id)
             }
 
-            override fun openVideo(post: Post) {
-//                val webpage: Uri = Uri.parse(post.video)
-//                val intent = Intent(Intent.ACTION_VIEW, webpage)
-//                if (context?.let { intent.resolveActivity(it.packageManager) } != null) {
-//                    startActivity(intent)
-//                } else {
-//                    Toast.makeText(
-//                        this@FeedFragment.context,
-//                        R.string.not_supported_in_any_application,
-//                        Toast.LENGTH_LONG
-//                    ).show()
-//                    return
-//                }
-            }
-
             override fun openCardPost(post: Post) {
                 findNavController().navigate(
                     R.id.action_feedFragment_to_postFragment,
@@ -97,14 +82,6 @@ class FeedFragment : Fragment() {
         binding.retryButton.setOnClickListener {
             viewModel.load()
         }
-//        viewModel.data.observe(viewLifecycleOwner) { posts ->
-//            val newPost = posts.size > adapter.currentList.size
-//            adapter.submitList(posts) {
-//                if (newPost) {
-//                    binding.recyclerList.smoothScrollToPosition(0)
-//                }
-//            }
-//        }
 
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)

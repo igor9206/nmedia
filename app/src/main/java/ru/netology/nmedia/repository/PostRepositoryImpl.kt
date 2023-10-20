@@ -86,7 +86,7 @@ class PostRepositoryImpl : PostRepository {
         TODO("Not yet implemented")
     }
 
-    override fun removeByIdAsync(callback: PostRepository.GetAllCallBack<Any>, id: Long) {
+    override fun removeByIdAsync(callback: PostRepository.GetAllCallBack<Unit>, id: Long) {
         val request = Request.Builder()
             .url("${BASE_URL}posts/${id}")
             .delete("".toRequestBody())
@@ -100,8 +100,7 @@ class PostRepositoryImpl : PostRepository {
 
                 override fun onResponse(call: Call, response: Response) {
                     try {
-                        val responseCode = response.code
-                        callback.onSuccess(responseCode)
+                        callback.onSuccess(Unit)
                     } catch (e: Exception) {
                         callback.onError(e)
                     }

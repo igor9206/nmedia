@@ -1,6 +1,7 @@
 package ru.netology.nmedia.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
@@ -9,13 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.extension.load
+import ru.netology.nmedia.extension.loadAvatar
 
 interface OnInteractionListener {
     fun like(post: Post)
     fun remove(post: Post)
     fun edit(post: Post)
     fun share(post: Post)
-    fun openVideo(post: Post)
     fun openCardPost(post: Post)
 }
 
@@ -38,6 +40,7 @@ class PostViewHolder(
     private val binding: CardPostBinding,
     private val onInteractionListener: OnInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
+    private val url = "http://192.168.1.54:9999"
     fun bind(post: Post) {
         binding.apply {
             author.text = post.author
@@ -45,12 +48,12 @@ class PostViewHolder(
             content.text = post.content
             like.isChecked = post.likedByMe
             like.text = post.numericFormat(post.likes)
-//            share.text = post.numericFormat(post.share)
-//            view.text = post.numericFormat(post.view)
-
-//            playButton.visibility = if (post.video.isNotEmpty()) View.VISIBLE else View.GONE
-            playButton.setOnClickListener {
-                onInteractionListener.openVideo(post)
+            avatar.loadAvatar("$url/avatars/${post.authorAvatar}")
+            imageContent.let {
+                if (post.attachment != null) {
+                    it.visibility = View.VISIBLE
+                    it.load("$url/images/${post.attachment.url}")
+                } else it.visibility = View.GONE
             }
 
             binding.cardPost.setOnClickListener {
