@@ -1,6 +1,7 @@
 package ru.netology.nmedia.viewmodel
 
 import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -43,6 +44,7 @@ class PostViewModel(private val application: Application) : AndroidViewModel(app
             }
 
             override fun onError(e: Exception) {
+                errorMsg(e.toString())
                 _data.postValue(FeedModelState(error = true))
             }
         })
@@ -67,7 +69,7 @@ class PostViewModel(private val application: Application) : AndroidViewModel(app
             }
 
             override fun onError(e: Exception) {
-                println(e)
+                errorMsg(e.toString())
             }
         }, likedByMe, id)
     }
@@ -87,7 +89,7 @@ class PostViewModel(private val application: Application) : AndroidViewModel(app
             }
 
             override fun onError(e: Exception) {
-                println(e)
+                errorMsg(e.toString())
             }
         }, id)
     }
@@ -104,7 +106,7 @@ class PostViewModel(private val application: Application) : AndroidViewModel(app
                     }
 
                     override fun onError(e: Exception) {
-                        println(e)
+                        errorMsg(e.toString())
                     }
                 }, it.copy(content = text))
             }
@@ -113,6 +115,10 @@ class PostViewModel(private val application: Application) : AndroidViewModel(app
 
     fun edit(post: Post) {
         edited.value = post
+    }
+
+    private fun errorMsg(error: String) {
+        Toast.makeText(application, error, Toast.LENGTH_SHORT).show()
     }
 
 }
