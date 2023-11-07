@@ -54,6 +54,20 @@
             app:layout_constraintTop_toBottomOf="@id/author"
             tools:text="@sample/posts.json/data/published" />
 
+        <ImageView
+            android:id="@+id/offlineIcon"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_4dp"
+            android:contentDescription="@string/offline_icon"
+            android:src="@drawable/ic_cloud_off_24"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/share"
+            app:layout_constraintStart_toEndOf="@id/share"
+            app:layout_constraintTop_toTopOf="@id/share"
+            tools:visibility="visible" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/menu"
             style="@style/Widget.AppTheme.Button"
