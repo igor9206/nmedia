@@ -65,45 +65,30 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override suspend fun likeById(id: Long) {
         val post = data.value?.find { it.id == id }
         post ?: return
-        localLikeById(post)
         try {
             if (post.likedByMe) {
+                dao.unlikeById(id)
                 val response = PostsApi.retrofitService.unLikeByIdAsync(post.id)
                 if (!response.isSuccessful) {
                     throw ApiError(response.code(), response.message())
                 }
+                val body = response.body() ?: throw ApiError(response.code(), response.message())
+                dao.insert(PostEntity.fromDto(body))
             } else {
+                dao.likeById(id)
                 val response = PostsApi.retrofitService.likeByIdAsync(post.id)
                 if (!response.isSuccessful) {
                     throw ApiError(response.code(), response.message())
                 }
+                val body = response.body() ?: throw ApiError(response.code(), response.message())
+                dao.insert(PostEntity.fromDto(body))
             }
         } catch (e: IOException) {
+            dao.insert(PostEntity.fromDto(post))
             throw NetworkError
         } catch (e: Exception) {
+            dao.insert(PostEntity.fromDto(post))
             throw UnknownError
-        }
-    }
-
-    private suspend fun localLikeById(post: Post) {
-        if (post.likedByMe) {
-            dao.insert(
-                PostEntity.fromDto(
-                    post.copy(
-                        likes = post.likes - 1,
-                        likedByMe = !post.likedByMe
-                    )
-                )
-            )
-        } else {
-            dao.insert(
-                PostEntity.fromDto(
-                    post.copy(
-                        likes = post.likes + 1,
-                        likedByMe = !post.likedByMe
-                    )
-                )
-            )
         }
     }
 

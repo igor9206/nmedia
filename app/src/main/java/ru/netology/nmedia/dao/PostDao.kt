@@ -15,6 +15,12 @@ interface PostDao {
     @Query("SELECT COUNT(*) == 0 FROM PostEntity")
     suspend fun isEmpty(): Boolean
 
+    @Query("UPDATE PostEntity SET likes = likes + 1, likedByMe = NOT likedByMe WHERE id = :id")
+    suspend fun likeById(id: Long)
+
+    @Query("UPDATE PostEntity SET likes = likes - 1, likedByMe = NOT likedByMe WHERE id = :id")
+    suspend fun unlikeById(id: Long)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(post: PostEntity)
 
