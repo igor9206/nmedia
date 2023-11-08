@@ -29,4 +29,7 @@
     <string name="internet_error">ошибка интернета</string>
     <string name="retry">повторить</string>
     <string name="image_content">картинка</string>
+    <string name="error_loading">ошибка загрузки</string>
+    <string name="retry_loading">повторить</string>
+    <string name="offline_icon">офлайн</string>
 </resources>

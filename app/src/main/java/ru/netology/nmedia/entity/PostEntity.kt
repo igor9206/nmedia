@@ -37,6 +37,9 @@ data class PostEntity(
     }
 }
 
+fun List<PostEntity>.toDto(): List<Post> = map(PostEntity::toDto)
+fun List<Post>.toEntity(): List<PostEntity> = map(PostEntity::fromDto)
+
 class AttachmentConverter {
     private val gson = Gson()
 

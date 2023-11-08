@@ -28,4 +28,7 @@
     <string name="internet_error">Internet error</string>
     <string name="retry">retry</string>
     <string name="image_content">image content</string>
+    <string name="error_loading">error loading</string>
+    <string name="retry_loading">retry loading</string>
+    <string name="offline_icon">offline icon</string>
 </resources>
