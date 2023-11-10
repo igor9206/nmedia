@@ -8,7 +8,8 @@ data class Post(
     val published: String,
     var likedByMe: Boolean,
     var likes: Int,
-    val attachment: Attachment?
+    val attachment: Attachment?,
+    var hidden: Boolean
 ) {
     fun numericFormat(number: Int): String {
         return when {

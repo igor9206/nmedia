@@ -5,10 +5,13 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModel
@@ -25,7 +28,8 @@ private val empty = Post(
     published = "",
     likes = 0,
     authorAvatar = "",
-    attachment = null
+    attachment = null,
+    hidden = true
 )
 
 class PostViewModel(private val application: Application) : AndroidViewModel(application) {
@@ -33,7 +37,17 @@ class PostViewModel(private val application: Application) : AndroidViewModel(app
     private val repository: PostRepository =
         PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
 
-    val data: LiveData<FeedModel> = repository.data.map(::FeedModel)
+    val data: LiveData<FeedModel> = repository.data
+        .map(::FeedModel)
+        .catch { it.printStackTrace() }
+        .asLiveData(Dispatchers.Default)
+
+    val newerCount = data.switchMap {
+        repository.getNewer(it.posts.firstOrNull()?.id ?: 0L)
+            .catch { _dataState.postValue(FeedModelState(error = true)) }
+            .asLiveData(Dispatchers.Default, 100)
+    }
+
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
         get() = _dataState
@@ -108,6 +122,10 @@ class PostViewModel(private val application: Application) : AndroidViewModel(app
             else -> "Error. Check internet connection"
         }
         Toast.makeText(application, msg, Toast.LENGTH_SHORT).show()
+    }
+
+    fun loadFromLocalDB() = viewModelScope.launch{
+        repository.loadFromLocalDB()
     }
 
 }

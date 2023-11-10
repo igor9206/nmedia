@@ -77,8 +77,9 @@ class FeedFragment : Fragment() {
             }
         }
 
+
         viewModel.data.observe(viewLifecycleOwner) { state ->
-            val newPost = state.posts.size > adapter.currentList.size
+            val newPost = state.posts.size > adapter.currentList.size && adapter.itemCount > 0
             adapter.submitList(state.posts) {
                 if (newPost) {
                     binding.recyclerList.smoothScrollToPosition(0)
@@ -88,9 +89,21 @@ class FeedFragment : Fragment() {
             binding.empty.isVisible = state.empty
         }
 
+        viewModel.newerCount.observe(viewLifecycleOwner) {
+            binding.recentPosts.isVisible = it > 0
+        }
+
+        binding.recentPosts.setOnClickListener {
+            binding.recyclerList.smoothScrollToPosition(0)
+//            viewModel.load()
+            viewModel.loadFromLocalDB()
+            it.isVisible = false
+        }
+
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.load()
             binding.swipeRefresh.isRefreshing = false
+            binding.recentPosts.isVisible = false
         }
 
         binding.retryButton.setOnClickListener {
