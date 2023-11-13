@@ -20,12 +20,15 @@ interface PostApiService {
     @GET("posts")
     suspend fun getAll(): Response<List<Post>>
 
+    @GET("posts/{id}/newer")
+    suspend fun getNewer(@Path("id") id: Long): Response<List<Post>>
+
     @POST("posts/{id}/likes")
     suspend fun likeByIdAsync(@Path("id") id: Long): Response<Post>
 
     @DELETE("posts/{id}/likes")
     suspend fun unLikeByIdAsync(@Path("id") id: Long): Response<Post>
-    
+
     suspend fun share(id: Long)
 
     @POST("posts")
