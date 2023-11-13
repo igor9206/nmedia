@@ -1,6 +1,7 @@
 package ru.netology.nmedia.viewmodel
 
 import android.app.Application
+import android.net.Uri
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -16,9 +17,11 @@ import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.model.FeedModelState
+import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.util.SingleLiveEvent
+import java.io.File
 
 private val empty = Post(
     id = 0,
@@ -49,6 +52,11 @@ class PostViewModel(private val application: Application) : AndroidViewModel(app
     }
 
     private val _dataState = MutableLiveData<FeedModelState>()
+
+    private val _photo = MutableLiveData<PhotoModel?>(null)
+    val photo: LiveData<PhotoModel?>
+        get() = _photo
+
     val dataState: LiveData<FeedModelState>
         get() = _dataState
 
@@ -59,6 +67,10 @@ class PostViewModel(private val application: Application) : AndroidViewModel(app
 
     init {
         load()
+    }
+
+    fun setPhoto(uri: Uri, file: File) {
+        _photo.value = PhotoModel(uri, file)
     }
 
     fun load() = viewModelScope.launch {
@@ -98,11 +110,16 @@ class PostViewModel(private val application: Application) : AndroidViewModel(app
         }
         edited.value = edited.value?.copy(content = text)
         edited.value?.let {
-            _postCreated.value = Unit
             viewModelScope.launch {
                 try {
-                    repository.save(it)
+                    val photo = _photo.value
+                    if (photo == null) {
+                        repository.save(it)
+                    } else {
+                        repository.saveWithAttachment(it, photo)
+                    }
                     _dataState.value = FeedModelState()
+                    _postCreated.value = Unit
                 } catch (e: Exception) {
                     _dataState.value = FeedModelState(error = true)
                 }
@@ -124,8 +141,12 @@ class PostViewModel(private val application: Application) : AndroidViewModel(app
         Toast.makeText(application, msg, Toast.LENGTH_SHORT).show()
     }
 
-    fun loadFromLocalDB() = viewModelScope.launch{
+    fun loadFromLocalDB() = viewModelScope.launch {
         repository.loadFromLocalDB()
+    }
+
+    fun clearPhoto() {
+        _photo.value = null
     }
 
 }

@@ -93,6 +93,7 @@ class FeedFragment : Fragment() {
             binding.recentPosts.isVisible = it > 0
         }
 
+
         binding.recentPosts.setOnClickListener {
             binding.recyclerList.smoothScrollToPosition(0)
 //            viewModel.load()

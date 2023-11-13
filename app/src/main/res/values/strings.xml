@@ -32,4 +32,6 @@
     <string name="retry_loading">retry loading</string>
     <string name="offline_icon">offline icon</string>
     <string name="recent_posts">recent posts</string>
+    <string name="save">save</string>
+    <string name="remove">remove</string>
 </resources>

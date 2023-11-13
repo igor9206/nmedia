@@ -52,8 +52,13 @@ class PostViewHolder(
             imageContent.let {
                 if (post.attachment != null) {
                     it.visibility = View.VISIBLE
-                    it.load("$url/images/${post.attachment.url}")
+                    it.load("$url/media/${post.attachment.url}")
                 } else it.visibility = View.GONE
+            }
+
+            binding.imageContent.setOnClickListener {
+                post.attachment ?: return@setOnClickListener
+
             }
 
             binding.cardPost.setOnClickListener {
