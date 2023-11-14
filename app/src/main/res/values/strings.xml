@@ -34,4 +34,8 @@
     <string name="recent_posts">recent posts</string>
     <string name="save">save</string>
     <string name="remove">remove</string>
+    <string name="preview">preview</string>
+    <string name="take_photo">take photo</string>
+    <string name="pick_photo">pick photo</string>
+    <!-- TODO: Remove or change this placeholder text -->
 </resources>

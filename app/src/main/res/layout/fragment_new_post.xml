@@ -40,7 +40,9 @@
                     android:adjustViewBounds="true"
                     android:padding="@dimen/_4dp"
                     android:clickable="true"
-                    tools:src="@tools:sample/avatars" />
+                    tools:src="@tools:sample/avatars"
+                    android:focusable="true"
+                    android:contentDescription="@string/preview" />
 
                 <Button
                     android:id="@+id/remove"
@@ -72,7 +74,8 @@
             android:background="?selectableItemBackground"
             android:padding="@dimen/_4dp"
             android:src="@drawable/ic_add_a_photo_24"
-            app:tint="?colorSurface" />
+            app:tint="?colorSurface"
+            android:contentDescription="@string/take_photo" />
 
         <ImageView
             android:id="@+id/pickPhoto"
@@ -81,7 +84,8 @@
             android:background="?selectableItemBackground"
             android:padding="@dimen/_4dp"
             android:src="@drawable/ic_add_photo_alternate_24"
-            app:tint="?colorSurface" />
+            app:tint="?colorSurface"
+            android:contentDescription="@string/pick_photo" />
 
     </LinearLayout>
 

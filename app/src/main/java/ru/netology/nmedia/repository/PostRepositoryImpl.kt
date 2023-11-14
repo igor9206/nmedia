@@ -29,9 +29,6 @@ import java.io.IOException
 class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override val data = dao.getAll()
-//        .map { list ->
-//            list.filter { !it.hidden }.toDto()
-//        }
         .map(List<PostEntity>::toDto)
 //        .flowOn(Dispatchers.Default)
 

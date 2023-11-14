@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.edit
 import androidx.core.net.toFile
@@ -89,7 +88,7 @@ class NewPostFragment : Fragment() {
                     else -> false
                 }
             }
-        })
+        }, viewLifecycleOwner)
 
         binding.remove.setOnClickListener {
             viewModel.clearPhoto()

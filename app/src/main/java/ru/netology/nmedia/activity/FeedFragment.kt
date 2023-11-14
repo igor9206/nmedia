@@ -3,8 +3,12 @@ package ru.netology.nmedia.activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -17,6 +21,7 @@ import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class FeedFragment : Fragment() {
@@ -64,6 +69,13 @@ class FeedFragment : Fragment() {
                     Bundle().also { it.number = post.id })
             }
 
+            override fun openMedia(post: String) {
+                findNavController().navigate(
+                    R.id.action_feedFragment_to_mediaFragment,
+                    Bundle().also { it.text = post }
+                )
+            }
+
         })
 
         binding.recyclerList.adapter = adapter
@@ -76,7 +88,6 @@ class FeedFragment : Fragment() {
                     .show()
             }
         }
-
 
         viewModel.data.observe(viewLifecycleOwner) { state ->
             val newPost = state.posts.size > adapter.currentList.size && adapter.itemCount > 0
