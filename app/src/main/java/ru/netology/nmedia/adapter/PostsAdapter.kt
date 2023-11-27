@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -59,6 +60,7 @@ class PostViewHolder(
                     it.load("$URL/media/${post.attachment.url}")
                 } else it.visibility = View.GONE
             }
+            menu.isVisible = post.ownedByMe
 
             binding.imageContent.setOnClickListener {
                 post.attachment ?: return@setOnClickListener

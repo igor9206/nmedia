@@ -37,5 +37,8 @@
     <string name="preview">preview</string>
     <string name="take_photo">take photo</string>
     <string name="pick_photo">pick photo</string>
+    <string name="sign_in">sign_in</string>
+    <string name="sign_up">sign_up</string>
+    <string name="sign_out">sign_out</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>
