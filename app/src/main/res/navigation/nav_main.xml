@@ -21,6 +21,9 @@
         <action
             android:id="@+id/action_feedFragment_to_postFragment"
             app:destination="@id/postFragment" />
+        <action
+            android:id="@+id/action_feedFragment_to_mediaFragment"
+            app:destination="@id/mediaFragment" />
     </fragment>
     <fragment
         android:id="@+id/newPostFragment"
@@ -40,4 +43,9 @@
             android:id="@+id/action_postFragment_to_editPostFragment"
             app:destination="@id/editPostFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/mediaFragment"
+        android:name="ru.netology.nmedia.activity.MediaFragment"
+        android:label="fragment_media"
+        tools:layout="@layout/fragment_media" />
 </navigation>

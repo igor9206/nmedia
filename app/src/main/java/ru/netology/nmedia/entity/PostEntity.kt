@@ -1,5 +1,6 @@
 package ru.netology.nmedia.entity
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
@@ -19,7 +20,8 @@ data class PostEntity(
     val published: String,
     var likedByMe: Boolean,
     var likes: Int,
-    val attachment: Attachment?,
+    @Embedded
+    val attachment: Attachment? = null,
     var hidden: Boolean
 ) {
     fun toDto() =

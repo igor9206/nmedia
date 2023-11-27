@@ -67,6 +67,10 @@ class PostFragment : Fragment() {
                 override fun openCardPost(post: Post) {
                     return
                 }
+
+                override fun openMedia(url: String) {
+                    TODO("Not yet implemented")
+                }
             })
 
             viewHolder.bind(post)

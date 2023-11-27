@@ -33,4 +33,9 @@
     <string name="retry_loading">повторить</string>
     <string name="offline_icon">офлайн</string>
     <string name="recent_posts">новые посты</string>
+    <string name="save">сохранить</string>
+    <string name="remove">удалить</string>
+    <string name="preview">превью</string>
+    <string name="take_photo">сделать фото</string>
+    <string name="pick_photo">выбрать фото</string>
 </resources>

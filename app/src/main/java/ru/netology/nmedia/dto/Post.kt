@@ -8,7 +8,7 @@ data class Post(
     val published: String,
     var likedByMe: Boolean,
     var likes: Int,
-    val attachment: Attachment?,
+    val attachment: Attachment? = null,
     var hidden: Boolean
 ) {
     fun numericFormat(number: Int): String {
@@ -25,6 +25,9 @@ data class Post(
 
 data class Attachment(
     val url: String,
-    val description: String,
-    val type: String
+    val type: AttachmentType
 )
+
+enum class AttachmentType {
+    IMAGE
+}
