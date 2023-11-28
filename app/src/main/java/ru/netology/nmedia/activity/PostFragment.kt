@@ -7,14 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.text
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostViewHolder
 import ru.netology.nmedia.databinding.FragmentPostBinding
+import ru.netology.nmedia.dialog.AppDialog
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.util.LongArg
+import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class PostFragment : Fragment() {
@@ -30,13 +33,19 @@ class PostFragment : Fragment() {
     ): View {
         val binding = FragmentPostBinding.inflate(inflater, container, false)
 
+        val authViewModel by viewModels<AuthViewModel>()
+
         val postId = arguments?.number
 
         viewModel.data.observe(viewLifecycleOwner) { state ->
             val post = state.posts.firstOrNull { it.id == postId } ?: return@observe
             val viewHolder = PostViewHolder(binding.singlePost, object : OnInteractionListener {
                 override fun like(post: Post) {
-                    viewModel.likeById(post.id, post.likedByMe)
+                    if (authViewModel.authenticated) {
+                        viewModel.likeById(post.id, post.likedByMe)
+                    } else {
+                        AppDialog.dialogAuthorization(requireView())
+                    }
                 }
 
                 override fun remove(post: Post) {

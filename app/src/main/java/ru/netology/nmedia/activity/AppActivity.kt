@@ -32,6 +32,7 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.text
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.ActivityAppBinding
+import ru.netology.nmedia.dialog.AppDialog
 import ru.netology.nmedia.viewmodel.AuthViewModel
 
 class AppActivity : AppCompatActivity() {
@@ -102,7 +103,13 @@ class AppActivity : AppCompatActivity() {
                     }
 
                     R.id.signout -> {
-                        AppAuth.getInstance().removeAuth()
+                        val nowFragment = navController.currentDestination?.id
+                        nowFragment ?: false
+                        if (nowFragment == R.id.newPostFragment) {
+                            AppDialog.dialogExit(binding.root)
+                        } else {
+                            AppAuth.getInstance().removeAuth()
+                        }
                         true
                     }
 

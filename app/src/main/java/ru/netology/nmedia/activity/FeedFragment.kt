@@ -1,17 +1,15 @@
 package ru.netology.nmedia.activity
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
@@ -20,8 +18,9 @@ import ru.netology.nmedia.activity.PostFragment.Companion.number
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
+import ru.netology.nmedia.dialog.AppDialog
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.util.AndroidUtils
+import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class FeedFragment : Fragment() {
@@ -34,9 +33,16 @@ class FeedFragment : Fragment() {
     ): View {
         val binding = FragmentFeedBinding.inflate(inflater, container, false)
 
+
+        val authViewModel by viewModels<AuthViewModel>()
+
         val adapter = PostsAdapter(object : OnInteractionListener {
             override fun like(post: Post) {
-                viewModel.likeById(post.id, post.likedByMe)
+                if (authViewModel.authenticated) {
+                    viewModel.likeById(post.id, post.likedByMe)
+                } else {
+                    AppDialog.dialogAuthorization(requireView())
+                }
             }
 
             override fun remove(post: Post) {
@@ -123,7 +129,11 @@ class FeedFragment : Fragment() {
         }
 
         binding.fab.setOnClickListener {
-            findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            if (authViewModel.authenticated) {
+                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            } else {
+                AppDialog.dialogAuthorization(requireView())
+            }
         }
 
         return binding.root
