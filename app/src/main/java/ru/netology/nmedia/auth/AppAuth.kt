@@ -1,10 +1,18 @@
 package ru.netology.nmedia.auth
 
 import android.content.Context
+import android.widget.Toast
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import ru.netology.nmedia.api.PostsApi
+import ru.netology.nmedia.entity.PostEntity
+import ru.netology.nmedia.error.ApiError
+import ru.netology.nmedia.error.NetworkError
+import ru.netology.nmedia.error.UnknownError
+import java.io.IOException
 import java.lang.IllegalStateException
+import kotlin.coroutines.coroutineContext
 
 class AppAuth private constructor(context: Context) {
 
@@ -51,6 +59,31 @@ class AppAuth private constructor(context: Context) {
 
         fun initAuth(context: Context) = instance ?: synchronized(this) {
             instance ?: AppAuth(context).also { instance = it }
+        }
+
+        suspend fun login(login: String, pass: String, context: Context) {
+            try {
+                val response = PostsApi.retrofitService.login(login, pass)
+                if (!response.isSuccessful) {
+                    when (response.code()) {
+                        400, 404 -> Toast.makeText(
+                            context,
+                            "Неверный логин или пароль",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        else -> throw ApiError(response.code(), response.message())
+                    }
+                    return
+                }
+
+                val body = response.body() ?: throw ApiError(response.code(), response.message())
+                getInstance().setAuth(body.id, body.token)
+            } catch (e: IOException) {
+                throw NetworkError
+            } catch (e: Exception) {
+                throw UnknownError
+            }
         }
 
     }

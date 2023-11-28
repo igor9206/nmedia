@@ -16,6 +16,7 @@ import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -34,6 +35,8 @@ import ru.netology.nmedia.databinding.ActivityAppBinding
 import ru.netology.nmedia.viewmodel.AuthViewModel
 
 class AppActivity : AppCompatActivity() {
+    private lateinit var navHostFragment: NavHostFragment
+    private lateinit var navController: NavController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityAppBinding.inflate(layoutInflater)
@@ -41,6 +44,10 @@ class AppActivity : AppCompatActivity() {
 
         val authViewModel by viewModels<AuthViewModel>()
 
+
+        navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.navContainerFragment) as NavHostFragment
+        navController = navHostFragment.navController
         intent?.let { intent ->
             if (intent.action != Intent.ACTION_SEND) {
                 return@let
@@ -57,9 +64,6 @@ class AppActivity : AppCompatActivity() {
             }
             // TODO: handle text
 
-            val navHostFragment =
-                supportFragmentManager.findFragmentById(R.id.navContainerFragment) as NavHostFragment
-            val navController = navHostFragment.navController
 
             navController.navigate(
                 R.id.action_feedFragment_to_newPostFragment,
@@ -87,7 +91,8 @@ class AppActivity : AppCompatActivity() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.signin -> {
-                        AppAuth.getInstance().setAuth(5, "x-token")
+//                        AppAuth.getInstance().setAuth(5, "x-token")
+                        navController.navigate(R.id.authorizationFragment)
                         true
                     }
 

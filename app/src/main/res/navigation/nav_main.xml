@@ -48,4 +48,9 @@
         android:name="ru.netology.nmedia.activity.MediaFragment"
         android:label="fragment_media"
         tools:layout="@layout/fragment_media" />
+    <fragment
+        android:id="@+id/authorizationFragment"
+        android:name="ru.netology.nmedia.activity.AuthorizationFragment"
+        android:label="fragment_authorization"
+        tools:layout="@layout/fragment_authorization" />
 </navigation>
