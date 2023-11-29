@@ -86,6 +86,31 @@ class AppAuth private constructor(context: Context) {
             }
         }
 
+        suspend fun registration(name: String, login: String, pass: String, context: Context) {
+            try {
+                val response = PostsApi.retrofitService.registration(name, login, pass)
+                if (!response.isSuccessful) {
+                    when (response.code()) {
+                        400, 404, 403 -> Toast.makeText(
+                            context,
+                            "Такой пользователь уже существует",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        else -> throw ApiError(response.code(), response.message())
+                    }
+                    return
+                }
+
+                val body = response.body() ?: throw ApiError(response.code(), response.message())
+                getInstance().setAuth(body.id, body.token)
+            } catch (e: IOException) {
+                throw NetworkError
+            } catch (e: Exception) {
+                throw UnknownError
+            }
+        }
+
     }
 }
 

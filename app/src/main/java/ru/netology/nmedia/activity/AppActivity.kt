@@ -98,7 +98,8 @@ class AppActivity : AppCompatActivity() {
                     }
 
                     R.id.signup -> {
-                        AppAuth.getInstance().setAuth(5, "x-token")
+                        navController.navigate(R.id.registrationFragment)
+//                        AppAuth.getInstance().setAuth(5, "x-token")
                         true
                     }
 

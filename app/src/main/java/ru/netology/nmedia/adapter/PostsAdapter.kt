@@ -45,7 +45,7 @@ class PostViewHolder(
     private val binding: CardPostBinding,
     private val onInteractionListener: OnInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
-    val gson = Gson()
+    private val gson = Gson()
     fun bind(post: Post) {
         binding.apply {
             author.text = post.author
