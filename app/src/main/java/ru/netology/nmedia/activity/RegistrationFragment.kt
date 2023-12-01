@@ -64,7 +64,7 @@ class RegistrationFragment : Fragment() {
 
         for (field in fields) {
             if (field.text.isNullOrEmpty()) {
-                field.error = "empty"
+                field.error = getString(R.string.error_empty_content)
                 count++
             } else {
                 field.error = null
@@ -76,7 +76,7 @@ class RegistrationFragment : Fragment() {
         } else {
             Toast.makeText(
                 requireContext(),
-                "Все поля должны быть заполнены!",
+                getString(R.string.all_fields_must_be_filled_in),
                 Toast.LENGTH_LONG
             ).show()
             false
@@ -90,11 +90,11 @@ class RegistrationFragment : Fragment() {
         } else {
             Toast.makeText(
                 requireContext(),
-                "Пароли не совпадают!",
+                getString(R.string.passwords_dont_match),
                 Toast.LENGTH_LONG
             ).show()
-            binding.pass.error = "check pass"
-            binding.repeatPassword.error = "check pass"
+            binding.pass.error = getString(R.string.check_pass)
+            binding.repeatPassword.error = getString(R.string.check_pass)
             false
         }
     }

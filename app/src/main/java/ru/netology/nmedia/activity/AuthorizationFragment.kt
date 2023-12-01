@@ -44,7 +44,7 @@ class AuthorizationFragment : Fragment() {
             if (login.isNotEmpty() && pass.isNotEmpty()) {
                 authorizationViewModel.login(login, pass, requireContext())
             } else {
-                Toast.makeText(requireContext(), "Заполните поля", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), getText(R.string.all_fields_must_be_filled_in), Toast.LENGTH_LONG).show()
             }
         }
 

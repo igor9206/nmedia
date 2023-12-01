@@ -11,24 +11,24 @@ object AppDialog {
 
     fun dialogAuthorization(view: View) {
         AlertDialog.Builder(view.context)
-            .setTitle("Перейти на страницу авторизации?")
-            .setMessage("Операция доступна только авторизованным пользователям.")
+            .setTitle(R.string.go_to_the_authorization_page)
+            .setMessage(R.string.the_operation_is_available_only_to_authorized_users)
             .setNegativeButton(
-                "cancel"
+                R.string.cancel
             ) { dialogInterface, _ -> dialogInterface.dismiss() }
-            .setPositiveButton("ok") { _, _ -> findNavController(view).navigate(R.id.authorizationFragment) }
+            .setPositiveButton(R.string.ok) { _, _ -> findNavController(view).navigate(R.id.authorizationFragment) }
             .create()
             .show()
     }
 
     fun dialogExit(view: View) {
         AlertDialog.Builder(view.context)
-            .setTitle("Выход")
-            .setMessage("Вы уверены что хотите выйти?")
+            .setTitle(R.string.exit)
+            .setMessage(R.string.are_you_sure_you_want_to_get_out)
             .setNegativeButton(
-                "cancel"
+                R.string.cancel
             ) { dialogInterface, _ -> dialogInterface.dismiss() }
-            .setPositiveButton("ok") { _, _ ->
+            .setPositiveButton(R.string.ok) { _, _ ->
                 AppAuth.getInstance().removeAuth()
                 findNavController(view).navigateUp()
             }

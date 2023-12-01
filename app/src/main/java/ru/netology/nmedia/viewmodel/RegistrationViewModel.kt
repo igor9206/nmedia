@@ -10,7 +10,8 @@ class RegistrationViewModel : ViewModel() {
 
     val data = AppAuth.getInstance().authState
 
-    fun registration(name: String, login: String, pass: String, context: Context) = viewModelScope.launch {
-        AppAuth.registration(name, login, pass, context)
-    }
+    fun registration(name: String, login: String, pass: String, context: Context) =
+        viewModelScope.launch {
+            AppAuth.registration(name, login, pass, context)
+        }
 }
