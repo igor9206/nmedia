@@ -38,4 +38,16 @@
     <string name="preview">превью</string>
     <string name="take_photo">сделать фото</string>
     <string name="pick_photo">выбрать фото</string>
+    <string name="sign_in">войти</string>
+    <string name="sign_up">зарегистрироваться</string>
+    <string name="sign_out">выйти</string>
+    <string name="all_fields_must_be_filled_in">Все поля должны быть заполнены!</string>
+    <string name="passwords_dont_match">Пароли не совпадают</string>
+    <string name="check_pass">проверьте пароль</string>
+    <string name="go_to_the_authorization_page">Перейти на страницу авторизации?</string>
+    <string name="the_operation_is_available_only_to_authorized_users">Операция доступна только зарегистрированным пользователям.</string>
+    <string name="cancel">закрыть</string>
+    <string name="ok">ок</string>
+    <string name="exit">Выход</string>
+    <string name="are_you_sure_you_want_to_get_out">Вы уверены что хотите выйти?</string>
 </resources>

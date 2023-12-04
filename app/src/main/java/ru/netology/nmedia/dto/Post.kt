@@ -2,6 +2,7 @@ package ru.netology.nmedia.dto
 
 data class Post(
     val id: Long,
+    val authorId: Long,
     val author: String,
     val authorAvatar: String,
     val content: String,
@@ -9,7 +10,8 @@ data class Post(
     var likedByMe: Boolean,
     var likes: Int,
     val attachment: Attachment? = null,
-    var hidden: Boolean
+    var hidden: Boolean,
+    val ownedByMe: Boolean = false
 ) {
     fun numericFormat(number: Int): String {
         return when {
