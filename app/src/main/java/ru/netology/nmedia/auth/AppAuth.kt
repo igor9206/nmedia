@@ -2,19 +2,32 @@ package ru.netology.nmedia.auth
 
 import android.content.Context
 import android.widget.Toast
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import ru.netology.nmedia.api.PostsApi
+import ru.netology.nmedia.dto.PushToken
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
+import ru.netology.nmedia.worker.SendPushTokenWorker
 import java.io.IOException
 import java.lang.IllegalStateException
 import kotlin.coroutines.coroutineContext
 
-class AppAuth private constructor(context: Context) {
+class AppAuth private constructor(private val context: Context) {
 
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
 
@@ -26,6 +39,10 @@ class AppAuth private constructor(context: Context) {
     )
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
+//    init {
+//        sendPushToken()
+//    }
+
     @Synchronized
     fun setAuth(id: Long, token: String) {
         _authState.value = AuthState(id, token)
@@ -34,6 +51,7 @@ class AppAuth private constructor(context: Context) {
             putString(KEY_TOKEN, token)
             commit()
         }
+        sendPushToken()
     }
 
     @Synchronized
@@ -43,6 +61,40 @@ class AppAuth private constructor(context: Context) {
             clear()
             commit()
         }
+        sendPushToken()
+    }
+
+    @Synchronized
+    fun sendPushToken(token: String? = null) {
+        val request = OneTimeWorkRequestBuilder<SendPushTokenWorker>()
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            )
+            .setInputData(
+                Data.Builder()
+                    .putString(SendPushTokenWorker.TOKEN_KEY, token)
+                    .build()
+            )
+            .build()
+
+        WorkManager.getInstance(context)
+            .enqueueUniqueWork(
+                SendPushTokenWorker.NAME,
+                ExistingWorkPolicy.REPLACE,
+                request
+            )
+
+//        CoroutineScope(Dispatchers.Default).launch {
+//            try {
+//                val pushToken = PushToken(token ?: FirebaseMessaging.getInstance().token.await())
+//
+//                PostsApi.retrofitService.sendPushToken(pushToken)
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }
     }
 
     companion object {
@@ -115,6 +167,6 @@ class AppAuth private constructor(context: Context) {
 }
 
 data class AuthState(
-    val id: Long = 0L,
+    val id: Long? = 0L,
     val token: String? = null
 )
