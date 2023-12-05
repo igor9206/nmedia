@@ -44,17 +44,11 @@ class FCMService : FirebaseMessagingService() {
             gson.fromJson(message.data["content"], PushMessage::class.java)
         val appAuthToken = AppAuth.getInstance().authState.value.id
 
-        when {
-            pushMessage.recipientId == appAuthToken -> notification(pushMessage.content)
-            pushMessage.recipientId == 0L && pushMessage.recipientId != appAuthToken -> AppAuth.getInstance()
-                .sendPushToken()
-
-            pushMessage.recipientId != 0L && pushMessage.recipientId != appAuthToken -> AppAuth.getInstance()
-                .sendPushToken()
-
-            pushMessage.recipientId == null -> notification(pushMessage.content)
+        when (pushMessage.recipientId) {
+            appAuthToken -> notification(pushMessage.content)
+            null -> notification(pushMessage.content)
+            else -> AppAuth.getInstance().sendPushToken()
         }
-
 
         message.data["action"]?.let {
             try {
