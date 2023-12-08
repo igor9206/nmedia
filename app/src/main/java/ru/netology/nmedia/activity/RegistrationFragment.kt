@@ -9,11 +9,13 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentRegistrationBinding
 import ru.netology.nmedia.viewmodel.RegistrationViewModel
 
+@AndroidEntryPoint
 class RegistrationFragment : Fragment() {
     private lateinit var binding: FragmentRegistrationBinding
 
@@ -38,16 +40,16 @@ class RegistrationFragment : Fragment() {
             }
         }
 
-        lifecycleScope.launch {
-            regViewModel.data.collect { state ->
-                val token = state.token.toString()
-                if (state.id != 0L && token.isNotEmpty()) {
-                    println(state.id)
-                    println(token)
-                    findNavController().navigateUp()
-                }
+
+        regViewModel.data.observe(viewLifecycleOwner) { state ->
+            val token = state.token.toString()
+            if (state.id != 0L && token.isNotEmpty()) {
+                println(state.id)
+                println(token)
+                findNavController().navigateUp()
             }
         }
+
 
         return binding.root
     }

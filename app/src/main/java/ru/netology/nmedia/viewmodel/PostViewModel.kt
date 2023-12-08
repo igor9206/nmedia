@@ -1,14 +1,18 @@
 package ru.netology.nmedia.viewmodel
 
 import android.app.Application
+import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
@@ -25,6 +29,7 @@ import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.File
+import javax.inject.Inject
 
 private val empty = Post(
     id = 0,
@@ -39,13 +44,13 @@ private val empty = Post(
     hidden = true
 )
 
-class PostViewModel(private val application: Application) : AndroidViewModel(application) {
-
-    private val repository: PostRepository =
-        PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val data: LiveData<FeedModel> = AppAuth.getInstance()
+@OptIn(ExperimentalCoroutinesApi::class)
+@HiltViewModel
+class PostViewModel @Inject constructor(
+    private val repository: PostRepository,
+    appAuth: AppAuth
+) : ViewModel() {
+    val data: LiveData<FeedModel> = appAuth
         .authState
         .flatMapLatest { auth ->
             repository.data.map { posts ->
@@ -145,13 +150,16 @@ class PostViewModel(private val application: Application) : AndroidViewModel(app
         edited.value = post
     }
 
-    private fun errorMsg(error: String) {
+    private fun errorMsg(
+        error: String,
+        context: Context
+    ) {
         val msg = when (error.takeLast(3).first()) {
             '4' -> "Client error: ${error.takeLast(3)}"
             '5' -> "Server error: ${error.takeLast(3)}"
             else -> "Error. Check internet connection"
         }
-        Toast.makeText(application, msg, Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
     }
 
     fun loadFromLocalDB() = viewModelScope.launch {

@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Response
-import ru.netology.nmedia.api.PostsApi
+import ru.netology.nmedia.api.PostApiService
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.AttachmentType
@@ -25,8 +25,14 @@ import ru.netology.nmedia.error.UnknownError
 import ru.netology.nmedia.model.PhotoModel
 import java.io.File
 import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
+@Singleton
+class PostRepositoryImpl @Inject constructor(
+    private val dao: PostDao,
+    private val postApiService: PostApiService
+) : PostRepository {
 
     override val data = dao.getAll()
         .map(List<PostEntity>::toDto)
@@ -34,7 +40,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override suspend fun getAll() {
         try {
-            val response = PostsApi.retrofitService.getAll()
+            val response = postApiService.getAll()
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -51,7 +57,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override fun getNewer(id: Long): Flow<Int> = flow {
         while (true) {
             delay(10_000L)
-            val response = PostsApi.retrofitService.getNewer(id)
+            val response = postApiService.getNewer(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -65,7 +71,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override suspend fun save(post: Post) {
         try {
-            val response = PostsApi.retrofitService.saveAsync(post)
+            val response = postApiService.saveAsync(post)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -82,7 +88,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override suspend fun removeById(id: Long) {
         dao.removeById(id)
         try {
-            val response = PostsApi.retrofitService.removeByIdAsync(id)
+            val response = postApiService.removeByIdAsync(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -101,7 +107,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
         try {
             if (post.likedByMe) {
                 dao.unlikeById(id)
-                val response = PostsApi.retrofitService.unLikeByIdAsync(post.id)
+                val response = postApiService.unLikeByIdAsync(post.id)
                 if (!response.isSuccessful) {
                     throw ApiError(response.code(), response.message())
                 }
@@ -109,7 +115,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
                 dao.insert(PostEntity.fromDto(body.copy(hidden = false)))
             } else {
                 dao.likeById(id)
-                val response = PostsApi.retrofitService.likeByIdAsync(post.id)
+                val response = postApiService.likeByIdAsync(post.id)
                 if (!response.isSuccessful) {
                     throw ApiError(response.code(), response.message())
                 }
@@ -138,7 +144,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
             val media = saveMedia.body() ?: throw ApiError(saveMedia.code(), saveMedia.message())
 
             val response =
-                PostsApi.retrofitService.saveAsync(
+                postApiService.saveAsync(
                     post.copy(
                         attachment = Attachment(
                             media.id,
@@ -160,7 +166,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     private suspend fun saveMedia(file: File): Response<Media> {
         val part = MultipartBody.Part.createFormData("file", file.name, file.asRequestBody())
-        return PostsApi.retrofitService.saveMedia(part)
+        return postApiService.saveMedia(part)
     }
 
 }

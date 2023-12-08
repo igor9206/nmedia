@@ -6,15 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentAuthorizationBinding
 import ru.netology.nmedia.viewmodel.AuthorizationViewModel
 
-
+@AndroidEntryPoint
 class AuthorizationFragment : Fragment() {
 
     override fun onCreateView(
@@ -22,17 +24,17 @@ class AuthorizationFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val binding = FragmentAuthorizationBinding.inflate(inflater, container, false)
-        val authorizationViewModel: AuthorizationViewModel by viewModels()
+        val authorizationViewModel: AuthorizationViewModel by activityViewModels()
 
 
-        lifecycleScope.launch {
-            authorizationViewModel.data.collect { state ->
-                val token = state.token.toString()
-                if (state.id != 0L && token.isNotEmpty()) {
-                    findNavController().navigateUp()
-                }
+
+        authorizationViewModel.data.observe(viewLifecycleOwner) { state ->
+            val token = state.token.toString()
+            if (state.id != 0L && token.isNotEmpty()) {
+                findNavController().navigateUp()
             }
         }
+
 
         binding.buttonBack.setOnClickListener {
             findNavController().navigateUp()
@@ -44,7 +46,11 @@ class AuthorizationFragment : Fragment() {
             if (login.isNotEmpty() && pass.isNotEmpty()) {
                 authorizationViewModel.login(login, pass, requireContext())
             } else {
-                Toast.makeText(requireContext(), getText(R.string.all_fields_must_be_filled_in), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    requireContext(),
+                    getText(R.string.all_fields_must_be_filled_in),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
 

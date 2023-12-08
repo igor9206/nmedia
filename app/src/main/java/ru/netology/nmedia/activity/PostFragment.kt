@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.text
 import ru.netology.nmedia.adapter.OnInteractionListener
@@ -20,6 +21,7 @@ import ru.netology.nmedia.util.LongArg
 import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 
+@AndroidEntryPoint
 class PostFragment : Fragment() {
     private val viewModel: PostViewModel by activityViewModels()
 
@@ -33,7 +35,7 @@ class PostFragment : Fragment() {
     ): View {
         val binding = FragmentPostBinding.inflate(inflater, container, false)
 
-        val authViewModel by viewModels<AuthViewModel>()
+        val authViewModel: AuthViewModel by activityViewModels()
 
         val postId = arguments?.number
 
