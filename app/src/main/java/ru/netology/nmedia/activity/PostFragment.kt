@@ -33,7 +33,7 @@ class PostFragment : Fragment() {
     ): View {
         val binding = FragmentPostBinding.inflate(inflater, container, false)
 
-        val authViewModel by viewModels<AuthViewModel>()
+        val authViewModel: AuthViewModel by activityViewModels()
 
         val postId = arguments?.number
 

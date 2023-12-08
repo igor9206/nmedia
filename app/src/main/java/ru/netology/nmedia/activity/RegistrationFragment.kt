@@ -38,16 +38,16 @@ class RegistrationFragment : Fragment() {
             }
         }
 
-        lifecycleScope.launch {
-            regViewModel.data.collect { state ->
-                val token = state.token.toString()
-                if (state.id != 0L && token.isNotEmpty()) {
-                    println(state.id)
-                    println(token)
-                    findNavController().navigateUp()
-                }
+
+        regViewModel.data.observe(viewLifecycleOwner) { state ->
+            val token = state.token.toString()
+            if (state.id != 0L && token.isNotEmpty()) {
+                println(state.id)
+                println(token)
+                findNavController().navigateUp()
             }
         }
+
 
         return binding.root
     }

@@ -8,47 +8,57 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import ru.netology.nmedia.api.PostsApi
-import ru.netology.nmedia.dto.PushToken
-import ru.netology.nmedia.entity.PostEntity
+import ru.netology.nmedia.api.PostApiService
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
 import ru.netology.nmedia.worker.SendPushTokenWorker
 import java.io.IOException
-import java.lang.IllegalStateException
-import kotlin.coroutines.coroutineContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AppAuth private constructor(private val context: Context) {
+@Singleton
+class AppAuth @Inject constructor(
+    @ApplicationContext
+    private val context: Context
+) {
 
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
+    private val idKey = "id"
+    private val tokenKey = "token"
 
     private val _authState = MutableStateFlow<AuthState>(
         AuthState(
-            prefs.getLong(KEY_ID, 0L),
-            prefs.getString(KEY_TOKEN, null)
+            prefs.getLong(idKey, 0L),
+            prefs.getString(tokenKey, null)
         )
     )
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
-//    init {
-//        sendPushToken()
-//    }
+    @InstallIn(SingletonComponent::class)
+    @EntryPoint
+    interface AppAuthEntryPoint {
+        fun postApiService(): PostApiService
+    }
+
+    private val entryPoint =
+        EntryPointAccessors.fromApplication(context, AppAuthEntryPoint::class.java)
+
 
     @Synchronized
     fun setAuth(id: Long, token: String) {
         _authState.value = AuthState(id, token)
         with(prefs.edit()) {
-            putLong(KEY_ID, id)
-            putString(KEY_TOKEN, token)
+            putLong(idKey, id)
+            putString(tokenKey, token)
             commit()
         }
         sendPushToken()
@@ -97,72 +107,54 @@ class AppAuth private constructor(private val context: Context) {
 //        }
     }
 
-    companion object {
-        private const val KEY_ID = "id"
-        private const val KEY_TOKEN = "token"
+    suspend fun login(login: String, pass: String, context: Context) {
+        try {
+            val response = entryPoint.postApiService().login(login, pass)
+            if (!response.isSuccessful) {
+                when (response.code()) {
+                    400, 404 -> Toast.makeText(
+                        context,
+                        "Неверный логин или пароль",
+                        Toast.LENGTH_LONG
+                    ).show()
 
-        @Volatile
-        private var instance: AppAuth? = null
-
-        fun getInstance() = synchronized(this) {
-            instance
-                ?: throw IllegalStateException("getInstance should be called only after initAuth")
-        }
-
-        fun initAuth(context: Context) = instance ?: synchronized(this) {
-            instance ?: AppAuth(context).also { instance = it }
-        }
-
-        suspend fun login(login: String, pass: String, context: Context) {
-            try {
-                val response = PostsApi.retrofitService.login(login, pass)
-                if (!response.isSuccessful) {
-                    when (response.code()) {
-                        400, 404 -> Toast.makeText(
-                            context,
-                            "Неверный логин или пароль",
-                            Toast.LENGTH_LONG
-                        ).show()
-
-                        else -> throw ApiError(response.code(), response.message())
-                    }
-                    return
+                    else -> throw ApiError(response.code(), response.message())
                 }
-
-                val body = response.body() ?: throw ApiError(response.code(), response.message())
-                getInstance().setAuth(body.id, body.token)
-            } catch (e: IOException) {
-                throw NetworkError
-            } catch (e: Exception) {
-                throw UnknownError
+                return
             }
+
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            setAuth(body.id, body.token)
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
         }
+    }
 
-        suspend fun registration(name: String, login: String, pass: String, context: Context) {
-            try {
-                val response = PostsApi.retrofitService.registration(name, login, pass)
-                if (!response.isSuccessful) {
-                    when (response.code()) {
-                        400, 404, 403 -> Toast.makeText(
-                            context,
-                            "Такой пользователь уже существует",
-                            Toast.LENGTH_LONG
-                        ).show()
+    suspend fun registration(name: String, login: String, pass: String, context: Context) {
+        try {
+            val response = entryPoint.postApiService().registration(name, login, pass)
+            if (!response.isSuccessful) {
+                when (response.code()) {
+                    400, 404, 403 -> Toast.makeText(
+                        context,
+                        "Такой пользователь уже существует",
+                        Toast.LENGTH_LONG
+                    ).show()
 
-                        else -> throw ApiError(response.code(), response.message())
-                    }
-                    return
+                    else -> throw ApiError(response.code(), response.message())
                 }
-
-                val body = response.body() ?: throw ApiError(response.code(), response.message())
-                getInstance().setAuth(body.id, body.token)
-            } catch (e: IOException) {
-                throw NetworkError
-            } catch (e: Exception) {
-                throw UnknownError
+                return
             }
-        }
 
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            setAuth(body.id, body.token)
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 }
 
