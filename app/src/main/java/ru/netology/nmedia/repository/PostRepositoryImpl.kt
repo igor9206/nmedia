@@ -1,9 +1,13 @@
 package ru.netology.nmedia.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.map
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
@@ -34,9 +38,13 @@ class PostRepositoryImpl @Inject constructor(
     private val postApiService: PostApiService
 ) : PostRepository {
 
-    override val data = dao.getAll()
-        .map(List<PostEntity>::toDto)
-//        .flowOn(Dispatchers.Default)
+    override val data = Pager(
+        config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+        pagingSourceFactory = {
+            PostPagingSource(postApiService)
+        }
+
+    ).flow
 
     override suspend fun getAll() {
         try {
@@ -99,14 +107,10 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun likeById(id: Long) {
-        val post = data.firstOrNull()?.firstOrNull {
-            it.id == id
-        }
-        post ?: return
+    override suspend fun likeById(post: Post) {
         try {
             if (post.likedByMe) {
-                dao.unlikeById(id)
+                dao.unlikeById(post.id)
                 val response = postApiService.unLikeByIdAsync(post.id)
                 if (!response.isSuccessful) {
                     throw ApiError(response.code(), response.message())
@@ -114,7 +118,7 @@ class PostRepositoryImpl @Inject constructor(
                 val body = response.body() ?: throw ApiError(response.code(), response.message())
                 dao.insert(PostEntity.fromDto(body.copy(hidden = false)))
             } else {
-                dao.likeById(id)
+                dao.likeById(post.id)
                 val response = postApiService.likeByIdAsync(post.id)
                 if (!response.isSuccessful) {
                     throw ApiError(response.code(), response.message())
