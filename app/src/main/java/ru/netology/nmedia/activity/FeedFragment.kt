@@ -98,6 +98,10 @@ class FeedFragment : Fragment() {
             }
         }
 
+        authViewModel.data.observe(viewLifecycleOwner) {
+            viewModel.load()
+        }
+
         lifecycleScope.launchWhenCreated {
             viewModel.data.collectLatest {
                 adapter.submitData(it)
