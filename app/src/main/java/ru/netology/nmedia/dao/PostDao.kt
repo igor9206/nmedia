@@ -12,7 +12,10 @@ import ru.netology.nmedia.entity.PostEntity
 @Dao
 interface PostDao {
     @Query("SELECT * FROM PostEntity WHERE hidden = 0 ORDER BY id DESC")
-    fun getAll(): PagingSource<Int, PostEntity>//Flow<List<PostEntity>>
+    fun getAll(): Flow<List<PostEntity>>
+
+    @Query("SELECT * FROM PostEntity WHERE hidden = 0 ORDER BY id DESC")
+    fun getPagingSource(): PagingSource<Int, PostEntity>
 
     @Query("SELECT COUNT(*) == 0 FROM PostEntity")
     suspend fun isEmpty(): Boolean
@@ -34,4 +37,7 @@ interface PostDao {
 
     @Query("DELETE FROM PostEntity WHERE id = :id")
     suspend fun removeById(id: Long)
+
+    @Query("DELETE FROM PostEntity")
+    suspend fun clear()
 }

@@ -1,5 +1,6 @@
 package ru.netology.nmedia.repository
 
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -17,6 +18,8 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Response
 import ru.netology.nmedia.api.PostApiService
 import ru.netology.nmedia.dao.PostDao
+import ru.netology.nmedia.dao.PostRemoteKeyDao
+import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.AttachmentType
 import ru.netology.nmedia.dto.Media
@@ -37,31 +40,30 @@ import javax.inject.Singleton
 @Singleton
 class PostRepositoryImpl @Inject constructor(
     private val dao: PostDao,
-    private val postApiService: PostApiService
+    private val postApiService: PostApiService,
+    postRemoteKeyDao: PostRemoteKeyDao,
+    appDb: AppDb,
 ) : PostRepository {
 
-//    override val data = Pager(
-//        config = PagingConfig(pageSize = 10, enablePlaceholders = false),
-//        pagingSourceFactory = {
-//            PostPagingSource(postApiService)
-//        }
-//
-//    ).flow
-
+    @OptIn(ExperimentalPagingApi::class)
     override val data = Pager(
         config = PagingConfig(
             pageSize = 10,
             enablePlaceholders = false,
             maxSize = 40
+        ),
+        pagingSourceFactory = { dao.getPagingSource() },
+        remoteMediator = PostRemoteMediator(
+            service = postApiService,
+            postDao = dao,
+            postRemoteKeyDao = postRemoteKeyDao,
+            db = appDb
         )
-    ) {
-        dao.getAll()
-    }.flow
-        .map { pagingData ->
-            pagingData
-                .map { postEntity ->
-                    postEntity.toDto()
-                }
+    ).flow
+        .map {
+            it.map { postEntity ->
+                postEntity.toDto()
+            }
         }
 
 
