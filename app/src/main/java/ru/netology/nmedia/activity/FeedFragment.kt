@@ -1,6 +1,5 @@
 package ru.netology.nmedia.activity
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,14 +8,19 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
+import androidx.paging.map
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.text
-import ru.netology.nmedia.activity.PostFragment.Companion.number
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
@@ -29,6 +33,7 @@ import ru.netology.nmedia.viewmodel.PostViewModel
 class FeedFragment : Fragment() {
     private val viewModel: PostViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
+    private val gson = Gson()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,7 +45,7 @@ class FeedFragment : Fragment() {
         val adapter = PostsAdapter(object : OnInteractionListener {
             override fun like(post: Post) {
                 if (authViewModel.authenticated) {
-                    viewModel.likeById(post.id, post.likedByMe)
+                    viewModel.likeById(post)
                 } else {
                     AppDialog.dialogAuthorization(requireView())
                 }
@@ -73,13 +78,13 @@ class FeedFragment : Fragment() {
             override fun openCardPost(post: Post) {
                 findNavController().navigate(
                     R.id.action_feedFragment_to_postFragment,
-                    Bundle().also { it.number = post.id })
+                    Bundle().also { it.text = gson.toJson(post) })
             }
 
             override fun openMedia(post: String) {
                 findNavController().navigate(
                     R.id.action_feedFragment_to_mediaFragment,
-                    Bundle().also { it.text = post }
+                    Bundle().also { it.text = gson.toJson(post) }
                 )
             }
 
@@ -96,33 +101,36 @@ class FeedFragment : Fragment() {
             }
         }
 
-        viewModel.data.observe(viewLifecycleOwner) { state ->
-            val newPost = state.posts.size > adapter.currentList.size && adapter.itemCount > 0
-            adapter.submitList(state.posts) {
-                if (newPost) {
-                    binding.recyclerList.smoothScrollToPosition(0)
-                }
+        authViewModel.data.observe(viewLifecycleOwner) {
+            viewModel.load()
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.data.collectLatest(adapter::submitData)
             }
-
-            binding.empty.isVisible = state.empty
         }
 
-        viewModel.newerCount.observe(viewLifecycleOwner) {
-            binding.recentPosts.isVisible = it > 0
+        viewLifecycleOwner.lifecycleScope.launch {
+            adapter.loadStateFlow.collectLatest {
+                binding.swipeRefresh.isRefreshing = it.refresh is LoadState.Loading
+                        || it.append is LoadState.Loading
+                        || it.prepend is LoadState.Loading
+            }
         }
 
+//        viewModel.newerCount.observe(viewLifecycleOwner) {
+//            binding.recentPosts.isVisible = it > 0
+//        }
 
         binding.recentPosts.setOnClickListener {
             binding.recyclerList.smoothScrollToPosition(0)
-//            viewModel.load()
             viewModel.loadFromLocalDB()
             it.isVisible = false
         }
 
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.load()
-            binding.swipeRefresh.isRefreshing = false
-            binding.recentPosts.isVisible = false
         }
 
         binding.retryButton.setOnClickListener {

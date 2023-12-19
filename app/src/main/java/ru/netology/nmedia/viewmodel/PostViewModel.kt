@@ -8,18 +8,32 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.flatMap
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.switchMap
+import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 import ru.netology.nmedia.auth.AppAuth
+import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModel
@@ -50,24 +64,21 @@ class PostViewModel @Inject constructor(
     private val repository: PostRepository,
     appAuth: AppAuth
 ) : ViewModel() {
-    val data: LiveData<FeedModel> = appAuth
+    val data: Flow<PagingData<Post>> = appAuth
         .authState
         .flatMapLatest { auth ->
             repository.data.map { posts ->
-                FeedModel(
-                    posts.map { it.copy(ownedByMe = auth.id == it.authorId) },
-                    posts.isEmpty()
-                )
+                posts.map { it.copy(ownedByMe = auth.id == it.authorId) }
             }
-
         }
-        .asLiveData(Dispatchers.Default)
+        .flowOn(Dispatchers.Default)
 
-    val newerCount = data.switchMap {
-        repository.getNewer(it.posts.firstOrNull()?.id ?: 0L)
-            .catch { _dataState.postValue(FeedModelState(error = true)) }
-            .asLiveData(Dispatchers.Default, 100)
-    }
+//    val newerCount = data.switchMap {
+//        repository.getNewer(it.posts.firstOrNull()?.id ?: 0L)
+//            .catch { _dataState.postValue(FeedModelState(error = true)) }
+//            .asLiveData(Dispatchers.Default, 100)
+//    }
+
 
     private val _dataState = MutableLiveData<FeedModelState>()
 
@@ -101,9 +112,9 @@ class PostViewModel @Inject constructor(
         }
     }
 
-    fun likeById(id: Long, likedByMe: Boolean) = viewModelScope.launch {
+    fun likeById(post: Post) = viewModelScope.launch {
         try {
-            repository.likeById(id)
+            repository.likeById(post)
         } catch (e: Exception) {
             _dataState.value = FeedModelState(error = true)
         }
