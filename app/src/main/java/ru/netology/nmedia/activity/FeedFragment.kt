@@ -96,13 +96,13 @@ class FeedFragment : Fragment() {
             binding.swipeRefresh.isRefreshing = state.refreshing
             if (state.error) {
                 Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.retry_loading) { viewModel.load() }
+                    .setAction(R.string.retry_loading) { adapter.refresh() }
                     .show()
             }
         }
 
         authViewModel.data.observe(viewLifecycleOwner) {
-            viewModel.load()
+            adapter.refresh()
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -119,9 +119,9 @@ class FeedFragment : Fragment() {
             }
         }
 
-//        viewModel.newerCount.observe(viewLifecycleOwner) {
-//            binding.recentPosts.isVisible = it > 0
-//        }
+        binding.swipeRefresh.setOnRefreshListener {
+            adapter.refresh()
+        }
 
         binding.recentPosts.setOnClickListener {
             binding.recyclerList.smoothScrollToPosition(0)
@@ -129,12 +129,8 @@ class FeedFragment : Fragment() {
             it.isVisible = false
         }
 
-        binding.swipeRefresh.setOnRefreshListener {
-            viewModel.load()
-        }
-
         binding.retryButton.setOnClickListener {
-            viewModel.load()
+            adapter.refresh()
         }
 
         binding.fab.setOnClickListener {

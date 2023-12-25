@@ -73,13 +73,6 @@ class PostViewModel @Inject constructor(
         }
         .flowOn(Dispatchers.Default)
 
-//    val newerCount = data.switchMap {
-//        repository.getNewer(it.posts.firstOrNull()?.id ?: 0L)
-//            .catch { _dataState.postValue(FeedModelState(error = true)) }
-//            .asLiveData(Dispatchers.Default, 100)
-//    }
-
-
     private val _dataState = MutableLiveData<FeedModelState>()
 
     private val _photo = MutableLiveData<PhotoModel?>(null)
@@ -95,7 +88,7 @@ class PostViewModel @Inject constructor(
         get() = _postCreated
 
     init {
-        load()
+//        load()
     }
 
     fun setPhoto(uri: Uri, file: File) {
