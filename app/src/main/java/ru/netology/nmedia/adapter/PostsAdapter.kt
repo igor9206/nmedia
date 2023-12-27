@@ -107,7 +107,7 @@ class PostViewHolder(
     fun bind(post: Post) {
         binding.apply {
             author.text = post.author
-            published.text = post.published.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+            published.text = post.published.toEpochSecond().toString()
             content.text = post.content
             like.isChecked = post.likedByMe
             like.text = post.numericFormat(post.likes)
