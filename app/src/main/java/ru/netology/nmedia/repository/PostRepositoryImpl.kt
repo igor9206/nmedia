@@ -4,13 +4,11 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
+import androidx.paging.insertSeparators
 import androidx.paging.map
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
@@ -20,22 +18,32 @@ import ru.netology.nmedia.api.PostApiService
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dao.PostRemoteKeyDao
 import ru.netology.nmedia.db.AppDb
+import ru.netology.nmedia.dto.Ad
 import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.AttachmentType
+import ru.netology.nmedia.dto.FeedItem
+import ru.netology.nmedia.dto.ItemSeparator
 import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.PostEntity
-import ru.netology.nmedia.entity.toDto
 import ru.netology.nmedia.entity.toEntity
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.AppError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
+import ru.netology.nmedia.extension.notToday
+import ru.netology.nmedia.extension.notWeekAgo
+import ru.netology.nmedia.extension.notYesterday
+import ru.netology.nmedia.extension.today
+import ru.netology.nmedia.extension.twoWeeksAgo
+import ru.netology.nmedia.extension.yesterday
 import ru.netology.nmedia.model.PhotoModel
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.random.Random
+
 
 @Singleton
 class PostRepositoryImpl @Inject constructor(
@@ -46,7 +54,7 @@ class PostRepositoryImpl @Inject constructor(
 ) : PostRepository {
 
     @OptIn(ExperimentalPagingApi::class)
-    override val data = Pager(
+    override val data: Flow<PagingData<FeedItem>> = Pager(
         config = PagingConfig(
             pageSize = 5,
             enablePlaceholders = false,
@@ -64,6 +72,19 @@ class PostRepositoryImpl @Inject constructor(
             it.map { postEntity ->
                 postEntity.toDto()
             }
+                .insertSeparators { previous: Post?, next: Post? ->
+                    if (previous.notToday() && next?.today() == true) {
+                        ItemSeparator(Random.nextLong(), "Сегодня")
+                    } else if (previous.notYesterday() && next?.yesterday() == true) {
+                        ItemSeparator(Random.nextLong(), "Вчера")
+                    } else if (previous.notWeekAgo() && next?.twoWeeksAgo() == true) {
+                        ItemSeparator(Random.nextLong(), "На прошлой неделе")
+                    } else if (previous?.id?.rem(5) == 0L) {
+                        Ad(Random.nextLong(), "figma.jpg")
+                    } else {
+                        null
+                    }
+                }
         }
 
 
