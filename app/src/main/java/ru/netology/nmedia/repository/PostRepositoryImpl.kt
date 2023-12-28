@@ -1,11 +1,14 @@
 package ru.netology.nmedia.repository
 
+import android.content.Context
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.TerminalSeparatorType
 import androidx.paging.insertSeparators
 import androidx.paging.map
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -14,10 +17,12 @@ import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Response
+import ru.netology.nmedia.R
 import ru.netology.nmedia.api.PostApiService
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dao.PostRemoteKeyDao
 import ru.netology.nmedia.db.AppDb
+import ru.netology.nmedia.di.ResourceService
 import ru.netology.nmedia.dto.Ad
 import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.AttachmentType
@@ -51,13 +56,14 @@ class PostRepositoryImpl @Inject constructor(
     private val postApiService: PostApiService,
     postRemoteKeyDao: PostRemoteKeyDao,
     appDb: AppDb,
+    resourceService: ResourceService,
 ) : PostRepository {
 
     @OptIn(ExperimentalPagingApi::class)
     override val data: Flow<PagingData<FeedItem>> = Pager(
         config = PagingConfig(
             pageSize = 5,
-            enablePlaceholders = false,
+            enablePlaceholders = true,
             maxSize = 15
         ),
         pagingSourceFactory = { dao.getPagingSource() },
@@ -72,17 +78,34 @@ class PostRepositoryImpl @Inject constructor(
             it.map { postEntity ->
                 postEntity.toDto()
             }
-                .insertSeparators { previous: Post?, next: Post? ->
-                    if (previous.notToday() && next?.today() == true) {
-                        ItemSeparator(Random.nextLong(), "Сегодня")
-                    } else if (previous.notYesterday() && next?.yesterday() == true) {
-                        ItemSeparator(Random.nextLong(), "Вчера")
-                    } else if (previous.notWeekAgo() && next?.twoWeeksAgo() == true) {
-                        ItemSeparator(Random.nextLong(), "На прошлой неделе")
-                    } else if (previous?.id?.rem(5) == 0L) {
-                        Ad(Random.nextLong(), "figma.jpg")
-                    } else {
-                        null
+                .insertSeparators(TerminalSeparatorType.SOURCE_COMPLETE) { previous: Post?, next: Post? ->
+                    when {
+                        previous.notToday() && next?.today() == true -> {
+                            ItemSeparator(
+                                Random.nextLong(),
+                                resourceService.getString(R.string.today)
+                            )
+                        }
+
+                        previous.notYesterday() && next?.yesterday() == true -> {
+                            ItemSeparator(
+                                Random.nextLong(),
+                                resourceService.getString(R.string.yesterday)
+                            )
+                        }
+
+                        previous.notWeekAgo() && next?.twoWeeksAgo() == true -> {
+                            ItemSeparator(
+                                Random.nextLong(),
+                                resourceService.getString(R.string.last_week)
+                            )
+                        }
+
+                        previous?.id?.rem(5) == 0L -> {
+                            Ad(Random.nextLong(), "figma.jpg")
+                        }
+
+                        else -> null
                     }
                 }
         }
