@@ -50,5 +50,9 @@
     <string name="ok">ok</string>
     <string name="exit">Exit</string>
     <string name="are_you_sure_you_want_to_get_out">Are you sure you want to get out?</string>
+    <string name="today" >today</string>
+    <string name="yesterday" >yesterday</string>
+    <string name="last_week" >last week</string>
+    <string name="connection_error" translatable="false">Connection error</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

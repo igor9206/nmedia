@@ -35,6 +35,7 @@ import okhttp3.internal.wait
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.db.AppDb
+import ru.netology.nmedia.dto.FeedItem
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.model.FeedModelState
@@ -43,6 +44,7 @@ import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.File
+import java.time.OffsetDateTime
 import javax.inject.Inject
 
 private val empty = Post(
@@ -51,7 +53,7 @@ private val empty = Post(
     content = "",
     author = "",
     likedByMe = false,
-    published = "",
+    published = OffsetDateTime.now(),
     likes = 0,
     authorAvatar = "",
     attachment = null,
@@ -64,11 +66,17 @@ class PostViewModel @Inject constructor(
     private val repository: PostRepository,
     appAuth: AppAuth
 ) : ViewModel() {
-    val data: Flow<PagingData<Post>> = appAuth
+    val data: Flow<PagingData<FeedItem>> = appAuth
         .authState
         .flatMapLatest { auth ->
             repository.data.map { posts ->
-                posts.map { it.copy(ownedByMe = auth.id == it.authorId) }
+                posts.map { feedItem ->
+                    if (feedItem is Post) {
+                        feedItem.copy(ownedByMe = auth.id == feedItem.authorId)
+                    } else {
+                        feedItem
+                    }
+                }
             }
         }
         .flowOn(Dispatchers.Default)

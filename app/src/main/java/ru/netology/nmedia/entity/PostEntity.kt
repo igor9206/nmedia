@@ -8,6 +8,7 @@ import androidx.room.TypeConverters
 import com.google.gson.Gson
 import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.Post
+import java.time.OffsetDateTime
 
 @Entity
 @TypeConverters(AttachmentConverter::class)
@@ -32,7 +33,7 @@ data class PostEntity(
             author,
             authorAvatar,
             content,
-            published,
+            OffsetDateTime.parse(published),
             likedByMe,
             likes,
             attachment,
@@ -46,7 +47,7 @@ data class PostEntity(
             post.author,
             post.authorAvatar,
             post.content,
-            post.published,
+            post.published.toString(),
             post.likedByMe,
             post.likes,
             post.attachment,
