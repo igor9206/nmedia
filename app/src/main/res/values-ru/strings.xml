@@ -50,4 +50,7 @@
     <string name="ok">ок</string>
     <string name="exit">Выход</string>
     <string name="are_you_sure_you_want_to_get_out">Вы уверены что хотите выйти?</string>
+    <string name="today">сегодня</string>
+    <string name="yesterday">вчера</string>
+    <string name="last_week">на прошлой неделе</string>
 </resources>
